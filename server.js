@@ -13,6 +13,23 @@ mongoose.connect(DB, { useCreateIndex: true, useFindAndModify: true, useNewUrlPa
 
 //Server
 const port = process.env.PORT;
-app.listen(port, () => {
+const server = app.listen(port, () => {
   console.log('listening on port 9003');
+});
+
+//subscribing to event of unhandledRejection to catch all rejected promises
+process.on('unhandledRejection', (err) => {
+  console.log('UNHANDLED REJECTION... Shutting Down');
+  console.log(err.name, err.message);
+  server.close(() => {
+    process.exit(1);
+  });
+});
+
+process.on('unhandledException', (err) => {
+  console.log('UNHANDLED EXCEPTION... Shutting Down');
+  console.log(err.name, err.message);
+  server.close(() => {
+    process.exit(1);
+  });
 });
